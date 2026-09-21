@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Check, Send } from 'lucide-react';
 
@@ -10,6 +10,7 @@ interface InquiryModalProps {
 
 export function InquiryModal({ isOpen, onClose, defaultModule }: InquiryModalProps) {
   const [submitted, setSubmitted] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,12 +18,21 @@ export function InquiryModal({ isOpen, onClose, defaultModule }: InquiryModalPro
     message: '',
   });
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    setTimeout(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
       setSubmitted(false);
       onClose();
     }, 2200);

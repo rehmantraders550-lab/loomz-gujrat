@@ -6,6 +6,7 @@ import { MissionStatement } from './components/MissionStatement';
 import { NarrativeSection } from './components/NarrativeSection';
 import { ProductCard } from './components/ProductCard';
 import { CaseStudyModal } from './components/CaseStudyModal';
+import { FabricSpotlightModal } from './components/FabricSpotlightModal';
 import { MenuModal } from './components/MenuModal';
 import { InquiryModal } from './components/InquiryModal';
 import { Footer } from './components/Footer';
@@ -15,6 +16,10 @@ import { ModuleCategory, SpatialModule } from './types';
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<ModuleCategory>('all');
   const [activeModule, setActiveModule] = useState<SpatialModule | null>(null);
+  const [activeFabric, setActiveFabric] = useState<{
+    fabricKey: string;
+    module?: SpatialModule;
+  } | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [inquiryTopic, setInquiryTopic] = useState<string | undefined>();
@@ -133,6 +138,9 @@ export default function App() {
                   module={module}
                   index={index}
                   onSelect={(m) => setActiveModule(m)}
+                  onOpenFabricSpotlight={(fabric, mod) =>
+                    setActiveFabric({ fabricKey: fabric, module: mod })
+                  }
                 />
               ))}
             </div>
@@ -157,6 +165,17 @@ export default function App() {
         module={activeModule}
         onClose={() => setActiveModule(null)}
         onOpenInquiry={(title) => handleOpenInquiry(title)}
+        onOpenFabricSpotlight={(fabric, mod) =>
+          setActiveFabric({ fabricKey: fabric, module: mod })
+        }
+      />
+
+      {/* Interactive Fabric Spotlight Modal */}
+      <FabricSpotlightModal
+        isOpen={!!activeFabric}
+        fabricKey={activeFabric?.fabricKey || null}
+        module={activeFabric?.module || null}
+        onClose={() => setActiveFabric(null)}
       />
 
       {/* Menu Drawer */}

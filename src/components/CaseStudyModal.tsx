@@ -1,14 +1,16 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ArrowRight, Layers, Sliders, MapPin, Calendar } from 'lucide-react';
+import { X, ArrowRight, Layers, Sliders, MapPin, Calendar, Sparkles } from 'lucide-react';
 import { SpatialModule } from '../types';
+import { ResponsiveImage } from './ResponsiveImage';
 
 interface CaseStudyModalProps {
   module: SpatialModule | null;
   onClose: () => void;
   onOpenInquiry: (moduleTitle: string) => void;
+  onOpenFabricSpotlight?: (fabricType: string, module: SpatialModule) => void;
 }
 
-export function CaseStudyModal({ module, onClose, onOpenInquiry }: CaseStudyModalProps) {
+export function CaseStudyModal({ module, onClose, onOpenInquiry, onOpenFabricSpotlight }: CaseStudyModalProps) {
   if (!module) return null;
 
   return (
@@ -57,10 +59,13 @@ export function CaseStudyModal({ module, onClose, onOpenInquiry }: CaseStudyModa
           <div className="overflow-y-auto p-6 sm:p-8 md:p-10 space-y-8">
             {/* Hero Image in Modal - Vertical Portrait framing */}
             <div className="w-full h-80 sm:h-96 md:h-[460px] rounded-2xl overflow-hidden relative">
-              <img
+              <ResponsiveImage
                 src={module.image}
                 alt={module.imageAlt}
+                sizes="(max-width: 768px) 94vw, 860px"
+                widths={[480, 720, 960, 1200, 1600]}
                 className="w-full h-full object-cover object-top"
+                priority={true}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-[#0A0A0A]/20 to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 flex flex-wrap justify-between items-end gap-4">
@@ -73,13 +78,17 @@ export function CaseStudyModal({ module, onClose, onOpenInquiry }: CaseStudyModa
                     {module.title}
                   </h3>
                   {module.subtitle && (
-                    <p
+                    <button
+                      type="button"
+                      onClick={() => onOpenFabricSpotlight?.(module.fabricType || module.subtitle || '', module)}
                       data-product-subtitle
-                      className="product-subtitle text-xs uppercase tracking-[0.2em] text-[#888888] font-sans font-medium"
-                      style={{ letterSpacing: '0.2em', color: '#888888' }}
+                      title="Inspect in Fabric Spotlight"
+                      className="product-subtitle text-xs uppercase tracking-[0.2em] text-[#888888] font-sans font-medium inline-flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer"
+                      style={{ letterSpacing: '0.2em' }}
                     >
-                      {module.subtitle}
-                    </p>
+                      <span>{module.subtitle}</span>
+                      <Sparkles className="w-3 h-3 text-white/50" />
+                    </button>
                   )}
                 </div>
 
@@ -124,21 +133,25 @@ export function CaseStudyModal({ module, onClose, onOpenInquiry }: CaseStudyModa
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {module.stats.map((stat, i) => (
-                    <div
+                    <button
                       key={i}
-                      className="p-4 rounded-xl border border-white/10 bg-white/[0.015]"
+                      type="button"
+                      onClick={() => onOpenFabricSpotlight?.(stat.value, module)}
+                      title={`Inspect ${stat.value} in Fabric Spotlight`}
+                      className="p-4 rounded-xl border border-white/10 bg-white/[0.015] hover:bg-white/10 hover:border-white/30 transition-all text-left cursor-pointer group/stat"
                     >
                       <div
                         data-product-spec
-                        className="product-spec text-[9px] uppercase tracking-[0.2em] text-[#888888] mb-1.5 font-sans font-medium"
-                        style={{ letterSpacing: '0.2em', color: '#888888' }}
+                        className="product-spec text-[9px] uppercase tracking-[0.2em] text-[#888888] group-hover/stat:text-white/70 mb-1.5 font-sans font-medium flex items-center justify-between"
+                        style={{ letterSpacing: '0.2em' }}
                       >
-                        {stat.label}
+                        <span>{stat.label}</span>
+                        <Sparkles className="w-2.5 h-2.5 opacity-0 group-hover/stat:opacity-100 transition-opacity" />
                       </div>
                       <div className="text-base sm:text-lg font-serif text-white">
                         {stat.value}
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -153,14 +166,18 @@ export function CaseStudyModal({ module, onClose, onOpenInquiry }: CaseStudyModa
                 </div>
                 <div className="flex flex-wrap gap-2.5">
                   {module.materials.map((mat, i) => (
-                    <div
+                    <button
                       key={i}
+                      type="button"
+                      onClick={() => onOpenFabricSpotlight?.(mat, module)}
                       data-product-spec
-                      className="product-spec text-xs uppercase tracking-[0.18em] text-[#888888] font-sans font-medium px-4 py-2 rounded-xl border border-white/10 bg-white/[0.02]"
-                      style={{ letterSpacing: '0.18em', color: '#888888' }}
+                      title={`Inspect ${mat} in Fabric Spotlight`}
+                      className="product-spec text-xs uppercase tracking-[0.18em] text-[#888888] hover:text-white hover:border-white/40 hover:bg-white/10 font-sans font-medium px-4 py-2 rounded-xl border border-white/10 bg-white/[0.02] transition-all cursor-pointer inline-flex items-center gap-1.5"
+                      style={{ letterSpacing: '0.18em' }}
                     >
-                      {mat}
-                    </div>
+                      <span>{mat}</span>
+                      <Sparkles className="w-3 h-3 text-white/40" />
+                    </button>
                   ))}
                 </div>
               </div>
