@@ -124,6 +124,7 @@ export default function App() {
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                perspective: '1200px',
               }}
             >
               {filteredModules.map((module, index) => (

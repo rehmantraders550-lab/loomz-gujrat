@@ -139,5 +139,11 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
   gap: 2rem;
   align-items: stretch;
+  perspective: 1200px;
+}
+
+.product-card {
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
