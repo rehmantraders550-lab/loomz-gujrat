@@ -1,0 +1,6 @@
+{
+  "name": "Loomz: Structural Eastern Wear",
+  "description": "Luxury Pakistani menswear editorial showcasing bespoke obsidian sherwanis, tailored karandi kurtas, structured prince coats, and raw silk waistcoats.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
