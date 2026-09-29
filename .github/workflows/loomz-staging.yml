@@ -64,6 +64,8 @@ jobs:
             echo "$path -> $code"
             test "$code" = 200
           done
-          curl -L -fsS "$SITE_URL/daily.html" | grep -q 'Sahar Lawn'
-          curl -L -fsS "$SITE_URL/products/lz-20.html" | grep -q 'Naqsh Jacquard'
+          curl -L -fsS -o /tmp/loomz-daily.html "$SITE_URL/daily.html"
+          grep -q 'Sahar Lawn' /tmp/loomz-daily.html
+          curl -L -fsS -o /tmp/loomz-lz-20.html "$SITE_URL/products/lz-20.html"
+          grep -q 'Naqsh Jacquard' /tmp/loomz-lz-20.html
           echo "live_staging=PASSED" >> "$GITHUB_STEP_SUMMARY"
