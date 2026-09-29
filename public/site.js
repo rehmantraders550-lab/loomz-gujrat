@@ -9,6 +9,70 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   let returnFocus = toggle;
 
+  /* A fabric-inspired palette choice, available on every page. */
+  const paletteNames = { linen: 'Linen', sage: 'Sage', dusk: 'Dusk' };
+  const paletteDetails = { linen: 'warm paper and umber', sage: 'soft mineral green', dusk: 'ink blue and champagne' };
+  const navInner = nav?.querySelector('.nav-inner');
+  if (navInner && toggle) {
+    const control = document.createElement('div');
+    control.className = 'palette-control';
+    control.innerHTML = `<button class="palette-trigger" type="button" aria-controls="paletteChoices" aria-expanded="false"><span class="palette-icon" aria-hidden="true"></span><span class="palette-current">Linen</span><span class="palette-chevron" aria-hidden="true">⌄</span></button><div class="palette-choices" id="paletteChoices" hidden><p class="palette-heading">Set the atmosphere</p><div role="group" aria-label="Site color palette">${Object.keys(paletteNames).map(key => `<button class="palette-option" type="button" data-palette="${key}" aria-pressed="false"><span class="palette-swatch swatch-${key}" aria-hidden="true"></span><span><strong>${paletteNames[key]}</strong><small>${paletteDetails[key]}</small></span><span class="palette-check" aria-hidden="true">✓</span></button>`).join('')}</div></div>`;
+    navInner.insertBefore(control, toggle);
+    const trigger = control.querySelector('.palette-trigger');
+    const choices = control.querySelector('.palette-choices');
+    const options = [...control.querySelectorAll('.palette-option')];
+    function syncPalette() {
+      const name = paletteNames[document.documentElement.dataset.theme] || paletteNames.linen;
+      trigger.querySelector('.palette-current').textContent = name;
+      trigger.setAttribute('aria-label', `Color palette: ${name}. Choose another palette`);
+      options.forEach(option => option.setAttribute('aria-pressed', String(option.dataset.palette === document.documentElement.dataset.theme)));
+    }
+    function closePalette(restoreFocus = false) {
+      choices.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) trigger.focus();
+    }
+    trigger.addEventListener('click', () => {
+      const opening = choices.hidden;
+      choices.hidden = !opening;
+      trigger.setAttribute('aria-expanded', String(opening));
+      if (opening) options.find(option => option.getAttribute('aria-pressed') === 'true')?.focus();
+    });
+    options.forEach(option => option.addEventListener('click', () => {
+      const theme = option.dataset.palette;
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme === 'dusk' ? 'dark' : 'light';
+      document.documentElement.classList.add('theme-ready');
+      try { localStorage.setItem('loomz-palette', theme); } catch { /* Choice still applies on this page. */ }
+      syncPalette();
+    }));
+    document.addEventListener('pointerdown', event => {
+      if (!control.contains(event.target)) closePalette();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !choices.hidden) { event.stopPropagation(); closePalette(true); }
+    });
+    syncPalette();
+  }
+
+  const hero = document.querySelector('.home-hero');
+  if (hero && !reduced.matches && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    let frame = 0;
+    hero.addEventListener('pointermove', event => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        const rect = hero.getBoundingClientRect();
+        hero.style.setProperty('--light-x', `${(event.clientX - rect.left) / rect.width * 100}%`);
+        hero.style.setProperty('--light-y', `${(event.clientY - rect.top) / rect.height * 100}%`);
+        frame = 0;
+      });
+    }, { passive: true });
+    hero.addEventListener('pointerleave', () => {
+      hero.style.removeProperty('--light-x');
+      hero.style.removeProperty('--light-y');
+    });
+  }
+
   function progress() {
     nav?.classList.toggle('scrolled', scrollY > 70);
     const distance = document.documentElement.scrollHeight - innerHeight;

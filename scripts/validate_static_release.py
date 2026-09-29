@@ -48,6 +48,8 @@ for path in pages:
     assert page.titles == 1 and page.mains == 1, f"Missing document structure: {path}"
     assert len(page.ids) == len(set(page.ids)), f"Duplicate IDs: {path}"
     assert "Powered by ORVIA" in text, f"Missing footer attribution: {path}"
+    assert text.count('theme-init.js') == 1 and text.index('theme-init.js') < text.index('site.css'), \
+        f"Palette initialization missing or late: {path}"
     for ref in page.refs:
         target = ROOT / ref.lstrip("/") if ref.startswith("/") else path.parent / ref
         assert target.is_file(), f"Broken reference in {path}: {ref}"
