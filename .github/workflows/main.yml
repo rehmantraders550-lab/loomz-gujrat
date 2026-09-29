@@ -1,1 +1,13 @@
+name: Legacy workflow placeholder
 
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acknowledge:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "LOOMZ staging validation runs in loomz-staging.yml"
